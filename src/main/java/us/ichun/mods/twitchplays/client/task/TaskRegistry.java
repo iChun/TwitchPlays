@@ -73,6 +73,7 @@ public class TaskRegistry
         registerTask("cam", TaskCamera.class);
 
         registerTask("togglethirdperson", TaskToggleThirdPerson.class);
+        registerTask("toggleminicam", TaskShowMinicam.class);
     }
 
     //TODO mine, mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc
