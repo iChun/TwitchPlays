@@ -45,6 +45,7 @@ public class TickHandlerClient
                     init = true;
 
                     String streamer = "ayloBot";
+                    //TODO if possible I would like to connect to a chat anonymously. Twitch API seems to have some form of support for it. If you enable line 50, do you crash?
 
 //                    (new Chat(new StandardChatAPI())).initialize(streamer, false);
 
