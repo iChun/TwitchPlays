@@ -22,13 +22,13 @@ public class TaskToggleThirdPerson extends Task
     }
 
     @Override
-    public boolean requiresOp()
+    public boolean requiresOp(String...args)
     {
         return true;
     }
 
     @Override
-    public boolean bypassOrder() { return true; };
+    public boolean bypassOrder(String...args) { return true; };
 
     @Override
     public boolean parse(String... args)

@@ -352,10 +352,11 @@ public class TickHandlerClient
         }
         if(!actualArgs.isEmpty() && TaskRegistry.hasTask(actualArgs.get(0)))
         {
-            Task task = TaskRegistry.createTask(world, player, actualArgs.toArray(new String[actualArgs.size()]));
+            String[] newArgs = actualArgs.toArray(new String[actualArgs.size()]);
+            Task task = TaskRegistry.createTask(world, player, newArgs);
             if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)))
             {
-                if(task.bypassOrder())
+                if(task.bypassOrder(newArgs))
                 {
                     instaTasks.add(task);
                 }

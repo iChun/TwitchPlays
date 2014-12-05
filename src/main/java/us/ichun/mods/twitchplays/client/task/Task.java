@@ -31,12 +31,12 @@ public abstract class Task
         return true;
     }
 
-    public boolean requiresOp()
+    public boolean requiresOp(String...args)
     {
         return false;
     }
 
-    public boolean bypassOrder() { return false; };
+    public boolean bypassOrder(String...args) { return false; }
 
     public abstract int maxActiveTime();
 
