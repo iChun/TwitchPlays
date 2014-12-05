@@ -52,18 +52,25 @@ public class TaskRegistry
         registerTask("fwd", TaskMovement.class);
         registerTask("f", TaskMovement.class);
         registerTask("w", TaskMovement.class);
+
         registerTask("back", TaskMovement.class);
         registerTask("bck", TaskMovement.class);
         registerTask("b", TaskMovement.class);
         registerTask("s", TaskMovement.class);
+
         registerTask("left", TaskMovement.class);
         registerTask("l", TaskMovement.class);
         registerTask("a", TaskMovement.class);
+
         registerTask("right", TaskMovement.class);
         registerTask("r", TaskMovement.class);
         registerTask("d", TaskMovement.class);
+
         registerTask("look", TaskLook.class);
         registerTask("jump", TaskJump.class);
+
+        registerTask("camera", TaskCamera.class);
+        registerTask("cam", TaskCamera.class);
     }
 
     //TODO toggle first/third person?, mine, camera UDLR, mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc

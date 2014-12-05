@@ -20,7 +20,7 @@ import us.ichun.mods.twitchplays.client.core.TickHandlerClient;
 
 @Mod(modid = "TwitchPlays", name = "TwitchPlays",
         version = TwitchPlays.version,
-        dependencies = "required-after:iChunUtil@[" + iChunUtil.versionMC +".1.2,)",
+        dependencies = "required-after:iChunUtil@[" + iChunUtil.versionMC +".1.3,)",
         acceptableRemoteVersions = "[" + iChunUtil.versionMC +".0.0," + iChunUtil.versionMC + ".1.0)"
 )
 public class TwitchPlays
@@ -63,6 +63,8 @@ public class TwitchPlays
 
                 config.setCurrentCategory("general", "ichun.config.cat.general.name", "ichun.config.cat.general.comment");
                 config.createIntBoolProperty("minicam", "twitchplays.config.prop.minicam.name", "twitchplays.config.prop.minicam.comment", true, false, true);
+                config.createIntProperty("minicamSize", "twitchplays.config.prop.minicamSize.name", "twitchplays.config.prop.minicamSize.comment", true, false, 25, 5, 90);
+                config.createIntProperty("minicamDistance", "twitchplays.config.prop.minicamDistance.name", "twitchplays.config.prop.minicamDistance.comment", true, false, 50, 5, 500);
 
                 tickHandlerClient = new TickHandlerClient();
 
