@@ -71,8 +71,10 @@ public class TaskRegistry
 
         registerTask("camera", TaskCamera.class);
         registerTask("cam", TaskCamera.class);
+
+        registerTask("togglethirdperson", TaskToggleThirdPerson.class);
     }
 
-    //TODO toggle first/third person?, mine, camera UDLR, mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc
+    //TODO mine, mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc
 
 }
