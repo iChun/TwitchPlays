@@ -68,7 +68,7 @@ public class TickHandlerClient
             Minecraft mc = Minecraft.getMinecraft();
             if(mc.theWorld != null)
             {
-                if(clock != mc.theWorld.getWorldTime())
+                if(clock != mc.theWorld.getWorldTime() || !mc.theWorld.getGameRules().getGameRuleBooleanValue("doDaylightCycle"))
                 {
                     clock = mc.theWorld.getWorldTime();
                     if(!tasks.isEmpty())
