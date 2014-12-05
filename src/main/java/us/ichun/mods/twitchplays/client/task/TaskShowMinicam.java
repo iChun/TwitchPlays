@@ -3,10 +3,11 @@ package us.ichun.mods.twitchplays.client.task;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
+import us.ichun.mods.twitchplays.common.TwitchPlays;
 
-public class TaskToggleThirdPerson extends Task
+public class TaskShowMinicam extends Task
 {
-    public TaskToggleThirdPerson(WorldClient world, EntityPlayerSP player)
+    public TaskShowMinicam(WorldClient world, EntityPlayerSP player)
     {
         super(world, player);
     }
@@ -14,11 +15,7 @@ public class TaskToggleThirdPerson extends Task
     @Override
     public void init()
     {
-        Minecraft.getMinecraft().gameSettings.thirdPersonView++;
-        if(Minecraft.getMinecraft().gameSettings.thirdPersonView > 2)
-        {
-            Minecraft.getMinecraft().gameSettings.thirdPersonView = 0;
-        }
+        TwitchPlays.tickHandlerClient.showMinicam = !TwitchPlays.tickHandlerClient.showMinicam;
     }
 
     @Override

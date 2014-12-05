@@ -36,6 +36,8 @@ public abstract class Task
         return false;
     }
 
+    public boolean bypassOrder() { return false; };
+
     public abstract int maxActiveTime();
 
     protected abstract void update();

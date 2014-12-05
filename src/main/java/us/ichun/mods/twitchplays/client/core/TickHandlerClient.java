@@ -49,6 +49,7 @@ public class TickHandlerClient
             }
         }
 
+        showMinicam = true;
         oriPitch = targetPitch = prevCamPitch = camPitch = 90F;
     }
 
@@ -89,7 +90,7 @@ public class TickHandlerClient
 
     public void renderMinicam(TickEvent.RenderTickEvent event)
     {
-        if(minicam == null || !init || !updateMinicam)
+        if(minicam == null || !init || !updateMinicam || !showMinicam)
         {
             return;
         }
@@ -220,7 +221,7 @@ public class TickHandlerClient
 
     public void renderMinicamOnScreen(TickEvent.RenderTickEvent event)
     {
-        if(minicam == null || !init || !(Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat))
+        if(minicam == null || !init || !(Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat) || !showMinicam)
         {
             return;
         }
@@ -305,6 +306,22 @@ public class TickHandlerClient
                             tasks.remove(0);
                         }
                     }
+                    for(int i = instaTasks.size() - 1; i >= 0; i--)
+                    {
+                        Task task = instaTasks.get(i);
+                        if(task.timeActive == 0)
+                        {
+                            task.world = mc.theWorld;
+                            task.player = mc.thePlayer;
+                            task.init();
+                        }
+                        task.tick();
+                        if(task.timeActive >= task.maxActiveTime())
+                        {
+                            task.terminate();
+                            instaTasks.remove(0);
+                        }
+                    }
                     if(turnTime > 0)
                     {
                         camYaw += (targetYaw - oriYaw) *(1F / (float)TURN_TIME);
@@ -338,7 +355,14 @@ public class TickHandlerClient
             Task task = TaskRegistry.createTask(world, player, actualArgs.toArray(new String[actualArgs.size()]));
             if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)))
             {
-                tasks.add(task);
+                if(task.bypassOrder())
+                {
+                    instaTasks.add(task);
+                }
+                else
+                {
+                    tasks.add(task);
+                }
                 return true;
             }
         }
@@ -383,7 +407,9 @@ public class TickHandlerClient
     public boolean init;
 
     public ArrayList<Task> tasks = new ArrayList<Task>();
+    public ArrayList<Task> instaTasks = new ArrayList<Task>();
 
+    public boolean showMinicam;
     public boolean updateMinicam;
     public Framebuffer minicam;
     public EntityClientPlayerMP playerInstance;
