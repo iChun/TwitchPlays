@@ -1,0 +1,3 @@
+twitchplays.config.prop.minicam.name=Enable Minicam?
+
+twitchplays.config.prop.minicam.comment=Minicam either shows a third person/first person view of the player, depending on whichever view is on the main cam.

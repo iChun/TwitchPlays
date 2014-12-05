@@ -5,10 +5,14 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import ichun.common.core.config.Config;
+import ichun.common.core.config.ConfigHandler;
+import ichun.common.core.config.IConfigUser;
 import ichun.common.core.updateChecker.ModVersionChecker;
 import ichun.common.core.updateChecker.ModVersionInfo;
 import ichun.common.iChunUtil;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Property;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,16 +24,25 @@ import us.ichun.mods.twitchplays.client.core.TickHandlerClient;
         acceptableRemoteVersions = "[" + iChunUtil.versionMC +".0.0," + iChunUtil.versionMC + ".1.0)"
 )
 public class TwitchPlays
+        implements IConfigUser
 {
-        public static final String version = iChunUtil.versionMC + ".0.2";
+        public static final String version = iChunUtil.versionMC + ".0.0";
 
         @Mod.Instance("TwitchPlays")
         public static TwitchPlays instance;
 
-        private static final Logger logger = LogManager.getLogger("Tabula");
+        private static final Logger logger = LogManager.getLogger("TwitchPlays");
+
+        public static Config config;
 
         @SideOnly(Side.CLIENT)
         public static TickHandlerClient tickHandlerClient;
+
+        @Override
+        public boolean onConfigChange(Config cfg, Property prop)
+        {
+                return true;
+        }
 
         @Mod.EventHandler
         public void preLoad(FMLPreInitializationEvent event)
@@ -46,6 +59,11 @@ public class TwitchPlays
         @SideOnly(Side.CLIENT)
         public void init(FMLPreInitializationEvent event)
         {
+                config = ConfigHandler.createConfig(event.getSuggestedConfigurationFile(), "twitchplays", "Twitch Plays", logger, instance);
+
+                config.setCurrentCategory("general", "ichun.config.cat.general.name", "ichun.config.cat.general.comment");
+                config.createIntBoolProperty("minicam", "twitchplays.config.prop.minicam.name", "twitchplays.config.prop.minicam.comment", true, false, true);
+
                 tickHandlerClient = new TickHandlerClient();
 
                 FMLCommonHandler.instance().bus().register(tickHandlerClient);
