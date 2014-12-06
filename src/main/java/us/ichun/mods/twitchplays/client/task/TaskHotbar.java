@@ -38,4 +38,10 @@ public class TaskHotbar extends Task {
         } else
             player.inventory.changeCurrentItem(slotChange);
     }
+
+    @Override
+    public String getName()
+    {
+        return "hotbar";
+    }
 }

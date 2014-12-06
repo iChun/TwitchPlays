@@ -15,6 +15,10 @@ public class TaskClearTasks extends Task
     @Override
     public void init()
     {
+        if(!TwitchPlays.tickHandlerClient.tasks.isEmpty())
+        {
+            TwitchPlays.tickHandlerClient.tasks.get(0).terminate();
+        }
         TwitchPlays.tickHandlerClient.tasks.clear();
     }
 
@@ -43,5 +47,11 @@ public class TaskClearTasks extends Task
     protected void update()
     {
 
+    }
+
+    @Override
+    public String getName()
+    {
+        return "cleartasks";
     }
 }

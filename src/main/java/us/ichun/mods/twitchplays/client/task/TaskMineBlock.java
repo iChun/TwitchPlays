@@ -69,4 +69,10 @@ public class TaskMineBlock extends Task
             terminate = true;
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "mine";
+    }
 }

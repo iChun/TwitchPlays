@@ -25,4 +25,10 @@ public class TaskDrop extends Task {
     protected void update() {
         player.dropOneItem(all);
     }
+
+    @Override
+    public String getName()
+    {
+        return "drop";
+    }
 }

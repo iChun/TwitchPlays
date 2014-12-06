@@ -68,6 +68,12 @@ public class TaskLook extends Task
     }
 
     @Override
+    public String getName()
+    {
+        return "look " + (moveType == 1 ? "up" : moveType == 2 ? "down" : moveType == 3 ? "left" : "right");
+    }
+
+    @Override
     public void terminate()
     {
         player.rotationYaw = targetYaw;

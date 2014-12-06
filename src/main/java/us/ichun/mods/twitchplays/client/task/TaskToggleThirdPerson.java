@@ -47,4 +47,10 @@ public class TaskToggleThirdPerson extends Task
     {
 
     }
+
+    @Override
+    public String getName()
+    {
+        return "togglethirdperson";
+    }
 }

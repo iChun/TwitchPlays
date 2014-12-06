@@ -42,6 +42,8 @@ public abstract class Task
 
     protected abstract void update();
 
+    public abstract String getName();
+
     public void tick()
     {
         update();

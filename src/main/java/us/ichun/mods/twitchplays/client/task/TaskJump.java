@@ -35,4 +35,10 @@ public class TaskJump extends Task
             player.motionY += 0.03999999910593033D;
         }
     }
+
+    @Override
+    public String getName()
+    {
+        return "jump";
+    }
 }

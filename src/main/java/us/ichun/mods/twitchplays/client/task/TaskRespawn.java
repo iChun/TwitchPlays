@@ -2,7 +2,6 @@ package us.ichun.mods.twitchplays.client.task;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -41,5 +40,11 @@ public class TaskRespawn extends Task
     protected void update()
     {
 
+    }
+
+    @Override
+    public String getName()
+    {
+        return "respawn";
     }
 }

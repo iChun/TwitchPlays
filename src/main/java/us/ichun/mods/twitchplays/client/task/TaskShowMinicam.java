@@ -44,4 +44,10 @@ public class TaskShowMinicam extends Task
     {
 
     }
+
+    @Override
+    public String getName()
+    {
+        return "toggleminicam";
+    }
 }

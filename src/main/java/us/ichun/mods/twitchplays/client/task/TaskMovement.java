@@ -84,6 +84,12 @@ public class TaskMovement extends Task
     }
 
     @Override
+    public String getName()
+    {
+        return (moveType == 1 ? "forward" : moveType == 2 ? "back" : moveType == 3 ? "left" : "right");
+    }
+
+    @Override
     public void terminate()
     {
         //TODO is riding...? movement jumps? sprint jumps?

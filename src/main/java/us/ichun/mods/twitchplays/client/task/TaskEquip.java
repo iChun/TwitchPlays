@@ -53,6 +53,12 @@ public class TaskEquip extends Task {
         }
     }
 
+    @Override
+    public String getName()
+    {
+        return "equip";
+    }
+
     private int searchPlayerInventory(ItemStack stack) {
         for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
             ItemStack item = player.inventory.getStackInSlot(i);

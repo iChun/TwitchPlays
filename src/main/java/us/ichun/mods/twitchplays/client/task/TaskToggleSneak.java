@@ -23,4 +23,10 @@ public class TaskToggleSneak extends Task {
     protected void update() {
         Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed = !Minecraft.getMinecraft().gameSettings.keyBindSneak.pressed;
     }
+
+    @Override
+    public String getName()
+    {
+        return "sneak";
+    }
 }

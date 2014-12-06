@@ -16,6 +16,7 @@ public class TaskEndTask extends Task
     {
         if(!TwitchPlays.tickHandlerClient.tasks.isEmpty())
         {
+            TwitchPlays.tickHandlerClient.tasks.get(0).terminate();
             TwitchPlays.tickHandlerClient.tasks.remove(0);
         }
     }
@@ -45,5 +46,11 @@ public class TaskEndTask extends Task
     protected void update()
     {
 
+    }
+
+    @Override
+    public String getName()
+    {
+        return "endtask";
     }
 }
