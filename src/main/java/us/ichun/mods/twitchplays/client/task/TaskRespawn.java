@@ -17,7 +17,7 @@ public class TaskRespawn extends Task
     public void init()
     {
         Minecraft mc = Minecraft.getMinecraft();
-        if(mc.currentScreen instanceof GuiGameOver)
+        if(mc.currentScreen instanceof GuiGameOver && !mc.theWorld.getWorldInfo().isHardcoreModeEnabled())
         {
             mc.thePlayer.respawnPlayer();
             mc.displayGuiScreen((GuiScreen)null);

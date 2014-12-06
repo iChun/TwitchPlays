@@ -68,11 +68,30 @@ public class TickHandlerClient
         }
         else
         {
+            Minecraft mc = Minecraft.getMinecraft();
+            ScaledResolution reso = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+
             renderMinicamOnScreen(event);
 
-            chatController.func_152997_n();
+            if(!(!init || !(Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat)))
+            {
+                boolean hasMinicam = minicam != null && showMinicam;
+                for(int i = 0; i < tasks.size(); i++)
+                {
+                    Task task = tasks.get(i);
+                    if((hasMinicam ? (8 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 5) + ((i + 2) * mc.fontRenderer.FONT_HEIGHT + 1) > reso.getScaledHeight())
+                    {
+                        int line = mc.fontRenderer.getStringWidth(Integer.toString(tasks.size() - i) + " more...");
+                        mc.fontRenderer.drawString(Integer.toString(tasks.size() - i) + " more...", reso.getScaledWidth() - 6 - line, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), 0xbbbbbb, false);
+                        break;
+                    }
+                    int taskNameWidth = mc.fontRenderer.getStringWidth(task.getName());
+                    mc.fontRenderer.drawString(task.getName(), reso.getScaledWidth() - 6 - taskNameWidth, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), i == 0 ? 0xff2222 : 0xffffff, false);
+                }
 
-            Minecraft mc = Minecraft.getMinecraft();
+            }
+
+            chatController.func_152997_n(); //updater
 
             if(mc.theWorld != null)
             {
@@ -243,7 +262,7 @@ public class TickHandlerClient
         Minecraft mc = Minecraft.getMinecraft();
         ScaledResolution reso = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
-        int width1 = 5;
+        int width1 = reso.getScaledWidth() - 5 - (int)((float)reso.getScaledWidth() * (float)TwitchPlays.config.getInt("minicamSize") / 100F);
         int height1 = 5;
         int width2 = width1 + (int)((float)reso.getScaledWidth() * (float)TwitchPlays.config.getInt("minicamSize") / 100F);
         int height2 = height1 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F);
