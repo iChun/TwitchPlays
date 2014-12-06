@@ -2,8 +2,10 @@ twitchplays.config.prop.minicam.name=Enable Minicam?
 twitchplays.config.prop.minicamSize.name=Minicam Size
 twitchplays.config.prop.minicamDistance.name=Minicam Distance
 twitchplays.config.prop.allowTwitchStaff.name=Allow Twitch Staff
+twitchplays.config.prop.democracyTimer.name=Democracy Timer
 
 twitchplays.config.prop.minicam.comment=Minicam either shows a third person/first person view of the player, depending on whichever view is on the main cam.
 twitchplays.config.prop.minicamSize.comment=Minicam size on screen (in percent)
 twitchplays.config.prop.minicamDistance.comment=Minicam distance (multiplied by 0.1 blocks)
 twitchplays.config.prop.allowTwitchStaff.comment=Allow Twitch Staff to use op commands?
+twitchplays.config.prop.democracyTimer.comment=How long till each democracy poll?

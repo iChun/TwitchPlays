@@ -31,6 +31,8 @@ import us.ichun.mods.twitchplays.client.task.TaskRegistry;
 import us.ichun.mods.twitchplays.common.TwitchPlays;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TickHandlerClient
         implements ChatController.ChatListener
@@ -346,11 +348,92 @@ public class TickHandlerClient
                         }
                     }
                 }
+                if(isDemocracy)
+                {
+                    if(democracyTimer > 0)
+                    {
+                        democracyTimer--;
+                        if(democracyTimer == 0)
+                        {
+                            countingVotes = true;
+
+                            boolean flag = false;
+                            while(!flag)
+                            {
+                                int votes = -1;
+                                String task = "";
+                                for(Map.Entry<String, Integer> e : democracyVotes.entrySet())
+                                {
+                                    if(e.getValue() > votes)
+                                    {
+                                        votes = e.getValue();
+                                        task = e.getKey();
+                                    }
+                                }
+                                if(votes != -1)
+                                {
+                                    flag = parseChat(mc.theWorld, mc.thePlayer, task, false, true);
+                                    democracyVotes.remove(task);
+                                }
+                                else
+                                {
+                                    flag = true;
+                                }
+                            }
+
+                            countingVotes = false;
+
+                            democracyTimer = TwitchPlays.config.getInt("democracyTimer") * 20;
+                            democracyVotes.clear();
+                            voters.clear();
+                        }
+                    }
+                }
             }
         }
     }
 
-    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, boolean isOp)//return true if task is added
+    public void addVote(String user, String task)
+    {
+        if(!voters.contains(user))
+        {
+            voters.add(user);
+            Integer votes = democracyVotes.get(task);
+            if(votes == null)
+            {
+                votes = 0;
+            }
+            democracyVotes.put(task, votes + 1);
+        }
+    }
+
+    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, String user, boolean isOp)//return true if task is added
+    {
+        if(isDemocracy)
+        {
+            boolean isTask = parseChat(world, player, s, isOp, false);
+            if(isTask)
+            {
+                String[] args = s.split(" ");
+                String task = "";
+                for(int i = 0; i < args.length; i++)
+                {
+                    if(!args[i].toLowerCase().trim().isEmpty())
+                    {
+                        task = task + args[i].toLowerCase().trim() + " ";
+                        task = task.trim();
+                    }
+                }
+
+                addVote(user, task);
+            }
+
+            return isTask;
+        }
+        return parseChat(world, player, s, isOp, true);
+    }
+
+    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, boolean isOp, boolean add)//return true if task is added
     {
         String[] args = s.split(" ");
         ArrayList<String> actualArgs = new ArrayList<String>();
@@ -383,15 +466,22 @@ public class TickHandlerClient
                 Task task = TaskRegistry.createTask(world, player, newArgs);
                 if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
                 {
-                    if(task.bypassOrder(newArgs))
+                    if(add || task.requiresOp(newArgs) && !countingVotes)
                     {
-                        instaTasks.add(task);
-                    }
-                    else
-                    {
-                        tasks.add(task);
+                        if(task.bypassOrder(newArgs))
+                        {
+                            instaTasks.add(task);
+                        }
+                        else
+                        {
+                            tasks.add(task);
+                        }
                     }
                     flag = true;
+                    if(task.requiresOp(newArgs) && countingVotes)
+                    {
+                        flag = false;
+                    }
                 }
             }
             return flag;
@@ -408,10 +498,12 @@ public class TickHandlerClient
             ChatComponentTranslation msg = (ChatComponentTranslation)event.message;
             if(msg.getKey().equals("chat.type.text") && msg.getFormatArgs().length > 1)
             {
+                String name = "";
                 boolean isPlayer = false;
                 if(msg.getFormatArgs()[0] instanceof ChatComponentText)
                 {
-                    isPlayer = ((ChatComponentText)msg.getFormatArgs()[0]).getUnformattedTextForChat().equals(mc.thePlayer.getCommandSenderName());
+                    name = ((ChatComponentText)msg.getFormatArgs()[0]).getUnformattedTextForChat();
+                    isPlayer = name.equals(mc.thePlayer.getCommandSenderName());
                 }
                 String s = "";
                 for(int i = 1; i < msg.getFormatArgs().length; i++)
@@ -429,7 +521,7 @@ public class TickHandlerClient
                         s = s + msg.getFormatArgs()[i].toString();
                     }
                 }
-                parseChat(mc.theWorld, mc.thePlayer, s, isPlayer);
+                parseChat(mc.theWorld, mc.thePlayer, s, name, isPlayer);
             }
         }
     }
@@ -439,6 +531,12 @@ public class TickHandlerClient
     public long clock;
 
     public boolean init;
+
+    public boolean isDemocracy;
+    public boolean countingVotes;
+    public int democracyTimer;
+    public HashMap<String, Integer> democracyVotes = new HashMap<String, Integer>();
+    public ArrayList<String> voters = new ArrayList<String>();
 
     public ArrayList<Task> tasks = new ArrayList<Task>();
     public ArrayList<Task> instaTasks = new ArrayList<Task>();
@@ -470,7 +568,7 @@ public class TickHandlerClient
             {
                 if(!msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BANNED))
                 {
-                    boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR)));
+                    boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.userName, msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR)));
                     ChatComponentText message = new ChatComponentText("");
                     message.getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE);
                     message.appendText("<" + msg.userName + "> ");

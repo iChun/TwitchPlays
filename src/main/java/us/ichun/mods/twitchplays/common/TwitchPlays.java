@@ -67,6 +67,7 @@ public class TwitchPlays
                 config.createIntProperty("minicamSize", "twitchplays.config.prop.minicamSize.name", "twitchplays.config.prop.minicamSize.comment", true, false, 25, 5, 90);
                 config.createIntProperty("minicamDistance", "twitchplays.config.prop.minicamDistance.name", "twitchplays.config.prop.minicamDistance.comment", true, false, 50, 5, 500);
                 config.createIntBoolProperty("allowTwitchStaff", "twitchplays.config.prop.allowTwitchStaff.name", "twitchplays.config.prop.allowTwitchStaff.comment", true, false, false);
+                config.createIntProperty("democracyTimer", "twitchplays.config.prop.democracyTimer.name", "twitchplays.config.prop.democracyTimer.comment", true, false, 10, 1, Integer.MAX_VALUE);
                 //TODO disabled tasks.
 
 
