@@ -78,6 +78,6 @@ public class TaskRegistry
         registerTask("mine", TaskMineBlock.class);
     }
 
-    //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc
+    //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc, democracy/anarchy, <task><no>
 
 }

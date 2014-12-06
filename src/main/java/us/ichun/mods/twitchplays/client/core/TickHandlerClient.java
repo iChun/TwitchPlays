@@ -361,22 +361,40 @@ public class TickHandlerClient
                 actualArgs.add(args[i].toLowerCase().trim());
             }
         }
+        int count = 1;
+        String arg0 = actualArgs.get(0);
+        try
+        {
+            int count1 = Integer.parseInt(arg0.substring(arg0.length() - 1));
+            count = count1;
+            arg0 = arg0.substring(0, arg0.length() - 1);
+            actualArgs.remove(0);
+            actualArgs.add(0, arg0);
+        }
+        catch(NumberFormatException e)
+        {
+        }
         if(!actualArgs.isEmpty() && TaskRegistry.hasTask(actualArgs.get(0)))
         {
             String[] newArgs = actualArgs.toArray(new String[actualArgs.size()]);
-            Task task = TaskRegistry.createTask(world, player, newArgs);
-            if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
+            boolean flag = false;
+            for(int i = 0; i < count; i++)
             {
-                if(task.bypassOrder(newArgs))
+                Task task = TaskRegistry.createTask(world, player, newArgs);
+                if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
                 {
-                    instaTasks.add(task);
+                    if(task.bypassOrder(newArgs))
+                    {
+                        instaTasks.add(task);
+                    }
+                    else
+                    {
+                        tasks.add(task);
+                    }
+                    flag = true;
                 }
-                else
-                {
-                    tasks.add(task);
-                }
-                return true;
             }
+            return flag;
         }
         return false;
     }
