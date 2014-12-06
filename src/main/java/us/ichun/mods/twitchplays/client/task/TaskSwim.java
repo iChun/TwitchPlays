@@ -33,6 +33,11 @@ public class TaskSwim extends Task
         if(args.length == 2)
         {
             moveType = (args[1].equals("forward") || args[1].equals("fwd") || args[1].equals("f") || args[1].equals("w")) ? 1 : (args[1].equals("back") || args[1].equals("bck") || args[1].equals("b") || args[1].equals("s")) ? 2 : (args[1].equals("left") || args[1].equals("l") || args[1].equals("a")) ? 3 : (args[1].equals("right") || args[1].equals("r") || args[1].equals("d")) ? 4 : 0;
+            if(args[1].equals("dammit") && world.rand.nextFloat() < 0.05F) //1 in 20 chance
+            {
+                moveType = 1;
+                player.motionY = 0.8D;
+            }
             return moveType != 0;
         }
         return false;
@@ -42,7 +47,7 @@ public class TaskSwim extends Task
     public void init()
     {
         Block block = world.getBlock((int)Math.floor(player.posX), (int)Math.floor(player.boundingBox.minY) - 1, (int)Math.floor(player.posZ));
-        if(!(block.getMaterial() == Material.water || block.getMaterial() == Material.lava))
+        if(!player.onGround && !(block.getMaterial() == Material.water || block.getMaterial() == Material.lava) || player.onGround && !player.isInWater())
         {
             timeActive = 10000;
         }

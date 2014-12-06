@@ -59,7 +59,7 @@ public class TaskCamera extends Task
     @Override
     public boolean requiresOp(String...args)
     {
-        return args.length == 3 && (args[1].equals("dist") || args[1].equals("distance"));
+        return false;
     }
 
     @Override
