@@ -41,9 +41,13 @@ public class TaskEquip extends Task {
                 query.setItemDamage(meta);
                 int slot = searchPlayerInventory(query);
                 if (slot != -1) {
-                    ItemStack tempStack = player.getCurrentEquippedItem();
-                    player.inventory.setInventorySlotContents(player.inventory.currentItem, player.inventory.getStackInSlot(slot));
-                    player.inventory.setInventorySlotContents(slot, tempStack);
+                    if (slot < 9)
+                        player.inventory.currentItem = slot;
+                    else {
+                        ItemStack tempStack = player.getCurrentEquippedItem();
+                        player.inventory.setInventorySlotContents(player.inventory.currentItem, player.inventory.getStackInSlot(slot));
+                        player.inventory.setInventorySlotContents(slot, tempStack);
+                    }
                 }
             }
         }
