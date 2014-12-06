@@ -11,6 +11,9 @@ public class TaskSwim extends Task
     public double startY;
     public double startZ;
 
+    public boolean hitLand;
+    public int hitLandTimeout;
+
     public TaskSwim(WorldClient world, EntityPlayerSP player)
     {
         super(world, player);
@@ -19,6 +22,11 @@ public class TaskSwim extends Task
     @Override
     public boolean parse(String... args)
     {
+        if(args.length == 1)
+        {
+            moveType = 1;
+            return true;
+        }
         if(args.length == 2)
         {
             moveType = (args[1].equals("forward") || args[1].equals("fwd") || args[1].equals("f") || args[1].equals("w")) ? 1 : (args[1].equals("back") || args[1].equals("bck") || args[1].equals("b") || args[1].equals("s")) ? 2 : (args[1].equals("left") || args[1].equals("l") || args[1].equals("a")) ? 3 : (args[1].equals("right") || args[1].equals("r") || args[1].equals("d")) ? 4 : 0;
@@ -30,6 +38,10 @@ public class TaskSwim extends Task
     @Override
     public void init()
     {
+        if(!player.isInWater())
+        {
+            timeActive = 10000;
+        }
         startX = player.posX;
         startY = player.posY;
         startZ = player.posZ;
@@ -38,7 +50,7 @@ public class TaskSwim extends Task
     @Override
     public int maxActiveTime()
     {
-        return 30;
+        return (player.isInWater() || hitLand || hitLandTimeout > 0) && player.isEntityAlive() && timeActive < (20 * 60) ? timeActive + 2 : 10;
     }
 
     @Override
@@ -52,38 +64,76 @@ public class TaskSwim extends Task
         {
             player.rotationYaw -= (player.rotationYaw + 45F) % 90F - 45F;
         }
-        float moveFactor = 1.0F;
-        double dist = player.getDistance(startX, player.posY, startZ);
-        if(dist > 0.80D)
+        if(hitLand && !player.isInWater())
         {
-            moveFactor = (float)((dist - 0.80D) / (1.0D - 0.80D));
+            hitLand = false;
+            player.jump();
+            player.motionY *= 0.8F;
         }
+        if(!hitLand)
+        {
+            hitLandTimeout--;
 
-        if(dist > 0.975D)
-        {
-            timeActive = 300;
+            if(hitLandTimeout > 0)
+            {
+                float moveFactor = 1.0F;
+                double dist = player.getDistance(startX, player.posY, startZ);
+                if(dist > 0.80D)
+                {
+                    moveFactor = (float)((dist - 0.80D) / (1.0D - 0.80D));
+                }
+
+                if(dist > 0.975D)
+                {
+                    timeActive = 300;
+                }
+                else
+                {
+                    double motionY = player.motionY;
+                    player.moveEntityWithHeading(moveType == 3 ? moveFactor : moveType == 4 ? -moveFactor : 0.0F, moveType == 1 ? moveFactor : moveType == 2 ? -moveFactor : 0.0F);
+                    if(!(player.isCollidedHorizontally && player.isOnLadder()))
+                    {
+                        player.motionY = motionY;
+                    }
+                    else if(motionY > 0D)
+                    {
+                        timeActive--;
+                    }
+                }
+            }
         }
-        else
+        if (player.isInWater() || player.handleLavaMovement())
         {
-            double motionY = player.motionY;
-            player.moveEntityWithHeading(moveType == 3 ? moveFactor : moveType == 4 ? -moveFactor : 0.0F, moveType == 1 ? moveFactor : moveType == 2 ? -moveFactor : 0.0F);
-            if(!(player.isCollidedHorizontally && player.isOnLadder()))
+            float moveFactor = 1.0F;
+            double dist = player.getDistance(startX, player.posY, startZ);
+            if(dist > 0.80D)
             {
-                player.motionY = motionY;
+                moveFactor = (float)((dist - 0.80D) / (1.0D - 0.80D));
             }
-            else if(motionY > 0D)
+
+            if(dist > 0.975D)
             {
-                timeActive--;
+                timeActive = 300;
             }
-            if(player.isCollidedHorizontally && !player.isJumping && player.onGround)
+            else
             {
-                player.jump();
-                player.motionY *= 0.8F;
+                double motionY = player.motionY;
+                player.moveEntityWithHeading(moveType == 3 ? moveFactor : moveType == 4 ? -moveFactor : 0.0F, moveType == 1 ? moveFactor : moveType == 2 ? -moveFactor : 0.0F);
+                if(!(player.isCollidedHorizontally && player.isOnLadder()))
+                {
+                    player.motionY = motionY;
+                }
+                else if(motionY > 0D)
+                {
+                    timeActive--;
+                }
+                if(player.isCollidedHorizontally)
+                {
+                    hitLand = true;
+                    hitLandTimeout = 10;
+                }
             }
-            if (player.isInWater() || player.handleLavaMovement())
-            {
-                player.motionY += 0.03999999910593033D;
-            }
+            player.motionY += 0.03999999910593033D;
         }
     }
 
@@ -101,7 +151,7 @@ public class TaskSwim extends Task
                 player.motionX = 0.0D;
                 player.motionZ = 0.0D;
             }
-//            player.setLocationAndAngles(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
+            //            player.setLocationAndAngles(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch);
         }
     }
 }

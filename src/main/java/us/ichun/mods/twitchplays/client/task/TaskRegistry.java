@@ -87,6 +87,8 @@ public class TaskRegistry
 
         registerTask("q", TaskDrop.class);
         registerTask("drop", TaskDrop.class);
+
+        registerTask("cleartasks", TaskClearTasks.class);
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc, democracy/anarchy, <task><no>

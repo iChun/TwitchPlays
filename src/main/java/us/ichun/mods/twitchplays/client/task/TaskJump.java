@@ -19,7 +19,7 @@ public class TaskJump extends Task
     @Override
     public int maxActiveTime()
     {
-        return player.isInWater() && player.isEntityAlive() ? timeActive + 2 : 10;
+        return player.isInWater() && player.isEntityAlive() && timeActive < (20 * 60) ? timeActive + 2 : 10;
     }
 
     @Override
