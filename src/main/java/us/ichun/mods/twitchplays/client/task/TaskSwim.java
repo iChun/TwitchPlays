@@ -17,6 +17,7 @@ public class TaskSwim extends Task
     public TaskSwim(WorldClient world, EntityPlayerSP player)
     {
         super(world, player);
+        hitLandTimeout = -1;
     }
 
     @Override
@@ -50,7 +51,7 @@ public class TaskSwim extends Task
     @Override
     public int maxActiveTime()
     {
-        return (player.isInWater() || hitLand || hitLandTimeout > 0) && player.isEntityAlive() && timeActive < (20 * 60) ? timeActive + 2 : 10;
+        return (player.isInWater() && player.motionY > 0.03999999910593033D || hitLandTimeout > 0) && player.isEntityAlive() && timeActive < (20 * 60)? timeActive + 2 : 10;
     }
 
     @Override
@@ -64,18 +65,18 @@ public class TaskSwim extends Task
         {
             player.rotationYaw -= (player.rotationYaw + 45F) % 90F - 45F;
         }
-        if(hitLand && !player.isInWater())
+        if(!(player.isInWater() || player.handleLavaMovement()))
         {
-            hitLand = false;
-            player.jump();
-            player.motionY *= 0.8F;
-        }
-        if(!hitLand)
-        {
-            hitLandTimeout--;
-
+            if(hitLand)
+            {
+                hitLand = false;
+                player.jump();
+                player.motionY *= 0.8F;
+            }
             if(hitLandTimeout > 0)
             {
+                hitLandTimeout--;
+
                 float moveFactor = 1.0F;
                 double dist = player.getDistance(startX, player.posY, startZ);
                 if(dist > 0.80D)
@@ -95,10 +96,6 @@ public class TaskSwim extends Task
                     {
                         player.motionY = motionY;
                     }
-                    else if(motionY > 0D)
-                    {
-                        timeActive--;
-                    }
                 }
             }
         }
@@ -114,6 +111,7 @@ public class TaskSwim extends Task
             if(dist > 0.975D)
             {
                 timeActive = 300;
+                hitLandTimeout = 0;
             }
             else
             {
@@ -123,17 +121,17 @@ public class TaskSwim extends Task
                 {
                     player.motionY = motionY;
                 }
-                else if(motionY > 0D)
-                {
-                    timeActive--;
-                }
-                if(player.isCollidedHorizontally)
+                if(player.isCollidedHorizontally && hitLandTimeout == -1)
                 {
                     hitLand = true;
                     hitLandTimeout = 10;
                 }
             }
             player.motionY += 0.03999999910593033D;
+            if(player.motionY < 0.03999999910593033D && Math.sqrt(player.motionX * player.motionX + player.motionZ * player.motionZ) < 0.01D)
+            {
+                hitLandTimeout = 0;
+            }
         }
     }
 
