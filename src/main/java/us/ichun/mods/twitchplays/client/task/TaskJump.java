@@ -30,5 +30,6 @@ public class TaskJump extends Task
             player.jump();
             player.motionY *= 0.8F;
         }
+        //TODO make the player swim to the surface if underwater.
     }
 }

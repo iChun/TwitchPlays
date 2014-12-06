@@ -80,7 +80,7 @@ public class TickHandlerClient
                 {
                     init = true;
 
-                    String streamer = "ohaiichun".toLowerCase();
+                    String streamer = "freeflytime".toLowerCase();
 
                     if(ObfHelper.obfuscation || !ObfHelper.obfuscation && TwitchPlays.config.getInt("twitchChatHook") == 1)
                     {
