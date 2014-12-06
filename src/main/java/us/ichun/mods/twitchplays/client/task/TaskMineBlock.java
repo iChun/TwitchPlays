@@ -24,6 +24,8 @@ public class TaskMineBlock extends Task
     public void init()
     {
         Minecraft mc = Minecraft.getMinecraft();
+        mc.setIngameFocus();
+        mc.inGameHasFocus = true;
         mc.gameSettings.keyBindAttack.pressed = true;
         if(mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK)
         {
