@@ -333,7 +333,7 @@ public class TickHandlerClient
                         if(task.timeActive >= task.maxActiveTime())
                         {
                             task.terminate();
-                            instaTasks.remove(0);
+                            instaTasks.remove(i);
                         }
                     }
                     if(turnTime > 0)
