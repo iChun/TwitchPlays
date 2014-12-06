@@ -8,4 +8,4 @@ twitchplays.config.prop.minicam.comment=Minicam either shows a third person/firs
 twitchplays.config.prop.minicamSize.comment=Minicam size on screen (in percent)
 twitchplays.config.prop.minicamDistance.comment=Minicam distance (multiplied by 0.1 blocks)
 twitchplays.config.prop.allowTwitchStaff.comment=Allow Twitch Staff to use op commands?
-twitchplays.config.prop.democracyTimer.comment=How long till each democracy poll?
+twitchplays.config.prop.democracyTimer.comment=How long till each democracy poll (in seconds)?
