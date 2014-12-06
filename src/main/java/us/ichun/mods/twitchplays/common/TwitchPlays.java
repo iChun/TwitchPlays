@@ -10,6 +10,7 @@ import ichun.common.core.config.ConfigHandler;
 import ichun.common.core.config.IConfigUser;
 import ichun.common.core.updateChecker.ModVersionChecker;
 import ichun.common.core.updateChecker.ModVersionInfo;
+import ichun.common.core.util.ObfHelper;
 import ichun.common.iChunUtil;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
@@ -67,6 +68,12 @@ public class TwitchPlays
                 config.createIntProperty("minicamDistance", "twitchplays.config.prop.minicamDistance.name", "twitchplays.config.prop.minicamDistance.comment", true, false, 50, 5, 500);
                 config.createIntBoolProperty("allowTwitchStaff", "twitchplays.config.prop.allowTwitchStaff.name", "twitchplays.config.prop.allowTwitchStaff.comment", true, false, false);
                 //TODO disabled tasks.
+
+
+                if(!ObfHelper.obfuscation)
+                {
+                        config.createIntBoolProperty("twitchChatHook", "Twitch Chat Hook", "You might be crashing in dev environment cause of the Twitch Chat.\nEnable Twitch Chat Hook?", true, false, true);
+                }
 
                 tickHandlerClient = new TickHandlerClient();
 

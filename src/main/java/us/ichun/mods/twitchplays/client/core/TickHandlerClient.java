@@ -80,12 +80,15 @@ public class TickHandlerClient
 
                     String streamer = "ohaiichun".toLowerCase();
 
-                    chatController.field_153010_h = true;
-                    chatController.func_152998_c(streamer);
-                    chatController.func_152985_f(streamer);
-                    chatController.field_153005_c = streamer;
-                    //TODO proper disconnecting.
-                    //These lines occcasionally crash in dev env. I do not know why.
+                    if(ObfHelper.obfuscation || !ObfHelper.obfuscation && TwitchPlays.config.getInt("twitchChatHook") == 1)
+                    {
+                        chatController.field_153010_h = true;
+                        chatController.func_152998_c(streamer);
+                        chatController.func_152985_f(streamer);
+                        chatController.field_153005_c = streamer;
+                        //TODO proper disconnecting.
+                        //These lines occcasionally crash in dev env. I do not know why. -iChun
+                    }
 
                     //field_153010_h connectAnonymously
                     //func_152997_n connectToChat
