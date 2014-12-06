@@ -20,12 +20,12 @@ import net.minecraft.client.stream.ChatController;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.ChatComponentTranslation;
-import net.minecraft.util.Session;
-import net.minecraft.util.Vec3;
+import net.minecraft.util.*;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import org.lwjgl.opengl.GL11;
+import tv.twitch.chat.ChatMessage;
+import tv.twitch.chat.ChatUserInfo;
+import tv.twitch.chat.ChatUserMode;
 import us.ichun.mods.twitchplays.client.task.Task;
 import us.ichun.mods.twitchplays.client.task.TaskRegistry;
 import us.ichun.mods.twitchplays.common.TwitchPlays;
@@ -33,10 +33,14 @@ import us.ichun.mods.twitchplays.common.TwitchPlays;
 import java.util.ArrayList;
 
 public class TickHandlerClient
+        implements ChatController.ChatListener
 {
     public TickHandlerClient()
     {
         chatController = new ChatController();
+        chatController.func_152990_a(this);
+        chatController.func_152984_a("nmt37qblda36pvonovdkbopzfzw3wlq");
+
         if(TwitchPlays.config.getInt("minicam") == 1)
         {
             if(OpenGlHelper.isFramebufferEnabled())
@@ -64,6 +68,8 @@ public class TickHandlerClient
         {
             renderMinicamOnScreen(event);
 
+            chatController.func_152997_n();
+
             Minecraft mc = Minecraft.getMinecraft();
 
             if(mc.theWorld != null)
@@ -72,17 +78,22 @@ public class TickHandlerClient
                 {
                     init = true;
 
-                    String streamer = "ayloBot";
-                    //TODO if possible I would like to connect to a chat anonymously. Twitch API seems to have some form of support for it. If you enable line 50, do you crash?
+                    String streamer = "ohaiichun".toLowerCase();
 
-                    //                    (new Chat(new StandardChatAPI())).initialize(streamer, false);
+                    chatController.field_153010_h = true;
+                    chatController.func_152998_c(streamer);
+                    chatController.func_152985_f(streamer);
+                    chatController.field_153005_c = streamer;
+                    //TODO proper disconnecting.
+                    //These lines occcasionally crash in dev env. I do not know why.
 
-                    //                    chatController.func_152998_c(streamer);
-                    //                    chatController.func_152985_f(streamer);// set user
-                    //                    chatController.field_153005_c = streamer;
-
+                    //field_153010_h connectAnonymously
+                    //func_152997_n connectToChat
+                    //func_153000_j chatState
+                    //func_152991_c isConnected
                     //func_152993_m shutdown
-                    //func_152985_f initialize(name)
+                    //func_152985_f initialize(name) ???
+                    //func_152997_n update
                 }
             }
         }
@@ -177,8 +188,6 @@ public class TickHandlerClient
 
         float tpDistTemp = mc.entityRenderer.thirdPersonDistanceTemp;
         mc.entityRenderer.thirdPersonDistanceTemp = (float)TwitchPlays.config.getInt("minicamDistance") * 0.1F;
-
-        //TODO set the rotationYaw and pitch and third person cam distance;
 
         playerInstance.prevRotationYaw = prevCamYaw;
         playerInstance.rotationYaw = camYaw;
@@ -338,9 +347,8 @@ public class TickHandlerClient
         }
     }
 
-    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s)//return true if task is added
+    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, boolean isOp)//return true if task is added
     {
-        //TODO might have to split string after <name>
         String[] args = s.split(" ");
         ArrayList<String> actualArgs = new ArrayList<String>();
         for(int i = 0; i < args.length; i++)
@@ -354,7 +362,7 @@ public class TickHandlerClient
         {
             String[] newArgs = actualArgs.toArray(new String[actualArgs.size()]);
             Task task = TaskRegistry.createTask(world, player, newArgs);
-            if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)))
+            if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
             {
                 if(task.bypassOrder(newArgs))
                 {
@@ -379,6 +387,11 @@ public class TickHandlerClient
             ChatComponentTranslation msg = (ChatComponentTranslation)event.message;
             if(msg.getKey().equals("chat.type.text") && msg.getFormatArgs().length > 1)
             {
+                boolean isPlayer = false;
+                if(msg.getFormatArgs()[0] instanceof ChatComponentText)
+                {
+                    isPlayer = ((ChatComponentText)msg.getFormatArgs()[0]).getUnformattedTextForChat().equals(mc.thePlayer.getCommandSenderName());
+                }
                 String s = "";
                 for(int i = 1; i < msg.getFormatArgs().length; i++)
                 {
@@ -395,12 +408,11 @@ public class TickHandlerClient
                         s = s + msg.getFormatArgs()[i].toString();
                     }
                 }
-                parseChat(mc.theWorld, mc.thePlayer, s);
+                parseChat(mc.theWorld, mc.thePlayer, s, isPlayer);
             }
         }
     }
 
-    //TODO render first/third person as mini window?
     //TODO commands parsed, time enlapsed, etc.
 
     public long clock;
@@ -426,4 +438,51 @@ public class TickHandlerClient
     public static final int TURN_TIME = 10;
 
     public ChatController chatController;
+
+    @Override
+    public void func_152903_a(ChatMessage[] messages) //on chat message
+    {
+        Minecraft mc = Minecraft.getMinecraft();
+        if(mc.theWorld != null)
+        {
+            for(ChatMessage msg : messages)
+            {
+                if(!msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BANNED))
+                {
+                    boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR)));
+                    ChatComponentText message = new ChatComponentText("");
+                    message.getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE);
+                    message.appendText("<" + msg.userName + "> ");
+                    ChatComponentText text = new ChatComponentText(msg.message);
+                    text.getChatStyle().setColor(isTask ? EnumChatFormatting.GRAY : EnumChatFormatting.WHITE);
+                    message.appendSibling(text);
+                    mc.thePlayer.addChatMessage(message);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void func_152904_a(ChatUserInfo[] p_152904_1_, ChatUserInfo[] p_152904_2_, ChatUserInfo[] p_152904_3_)//chat channel user change callback..?
+    {
+
+    }
+
+    @Override
+    public void func_152906_d() //On chat connect
+    {
+
+    }
+
+    @Override
+    public void func_152905_e() //On chat disconnect
+    {
+
+    }
+
+    @Override
+    public void func_152902_f() //on chat clear
+    {
+
+    }
 }

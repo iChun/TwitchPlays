@@ -18,9 +18,9 @@ buildscript {
 apply plugin: 'forge'
 
 // Requires iChunUtil to run. Just put iChunUtil-deobf.jar in the /libs/ folder or it won't compile.
-version = "4.0.2"
-group= "tabula" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Tabula"
+version = "4.0.0"
+group= "twitchplays" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
+archivesBaseName = "TwitchPlays"
 
 minecraft {
     version = "1.7.10-10.13.2.1236"
