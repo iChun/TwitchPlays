@@ -76,6 +76,8 @@ public class TaskRegistry
         registerTask("toggleminicam", TaskShowMinicam.class);
 
         registerTask("mine", TaskMineBlock.class);
+
+        registerTask("hotbar", TaskHotbar.class);
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc, democracy/anarchy, <task><no>
