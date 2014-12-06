@@ -88,7 +88,12 @@ public class TaskRegistry
         registerTask("q", TaskDrop.class);
         registerTask("drop", TaskDrop.class);
 
+<<<<<<< HEAD
         registerTask("cleartasks", TaskClearTasks.class);
+=======
+        registerTask("crouch", TaskToggleSneak.class);
+        registerTask("sneak", TaskToggleSneak.class);
+>>>>>>> dafbc02c6e0259d74b90f5354257cb730ff6eaa4
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc, democracy/anarchy, <task><no>
