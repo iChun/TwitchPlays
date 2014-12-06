@@ -1,5 +1,7 @@
 package us.ichun.mods.twitchplays.client.task;
 
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 
@@ -39,7 +41,8 @@ public class TaskSwim extends Task
     @Override
     public void init()
     {
-        if(!player.isInWater())
+        Block block = world.getBlock((int)Math.floor(player.posX), (int)Math.floor(player.boundingBox.minY) - 1, (int)Math.floor(player.posZ));
+        if(!(block.getMaterial() == Material.water || block.getMaterial() == Material.lava))
         {
             timeActive = 10000;
         }
