@@ -11,7 +11,7 @@ public class TaskToggleSneak extends Task {
 
     @Override
     public boolean parse(String... args) {
-        return true;
+        return args.length == 1;
     }
 
     @Override
