@@ -89,6 +89,7 @@ public class TaskRegistry
         registerTask("drop", TaskDrop.class);
 
         registerTask("cleartasks", TaskClearTasks.class);
+        registerTask("endtask", TaskEndTask.class);
 
         registerTask("crouch", TaskToggleSneak.class);
         registerTask("sneak", TaskToggleSneak.class);
