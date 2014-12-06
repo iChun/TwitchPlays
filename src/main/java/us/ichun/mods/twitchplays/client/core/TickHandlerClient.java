@@ -568,10 +568,11 @@ public class TickHandlerClient
             {
                 if(!msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BANNED))
                 {
-                    boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.userName, msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR)));
+                    boolean isOp = msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR));
+                    boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.userName, isOp);
                     ChatComponentText message = new ChatComponentText("");
                     message.getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE);
-                    message.appendText("<" + msg.userName + "> ");
+                    message.appendText((isOp ? "<@" : "<") + msg.userName + "> ");
                     ChatComponentText text = new ChatComponentText(msg.message);
                     text.getChatStyle().setColor(isTask ? EnumChatFormatting.GRAY : EnumChatFormatting.WHITE);
                     message.appendSibling(text);
