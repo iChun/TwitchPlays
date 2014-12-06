@@ -94,6 +94,6 @@ public class TaskRegistry
         registerTask("sneak", TaskToggleSneak.class);
     }
 
-    //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc, democracy/anarchy, <task><no>
+    //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, etc, democracy/anarchy
 
 }
