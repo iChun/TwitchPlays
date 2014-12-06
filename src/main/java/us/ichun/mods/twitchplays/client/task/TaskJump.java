@@ -19,7 +19,7 @@ public class TaskJump extends Task
     @Override
     public int maxActiveTime()
     {
-        return 1;
+        return player.isInWater() && player.isEntityAlive() ? timeActive + 2 : 1;
     }
 
     @Override
@@ -30,6 +30,9 @@ public class TaskJump extends Task
             player.jump();
             player.motionY *= 0.8F;
         }
-        //TODO make the player swim to the surface if underwater.
+        if (player.isInWater() || player.handleLavaMovement())
+        {
+            player.motionY += 0.03999999910593033D;
+        }
     }
 }
