@@ -78,6 +78,9 @@ public class TaskRegistry
         registerTask("mine", TaskMineBlock.class);
 
         registerTask("hotbar", TaskHotbar.class);
+
+        registerTask("equip", TaskEquip.class);
+        registerTask("hold", TaskEquip.class);
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, respawn, equip, drop, etc, democracy/anarchy, <task><no>
