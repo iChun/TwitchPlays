@@ -24,6 +24,14 @@ public class TaskRegistry
 
     public static boolean hasTask(String taskName)
     {
+        String[] disabled = TwitchPlays.config.getString("disabledTasks").split(", *");
+        for(String s : disabled)
+        {
+            if(taskName.equalsIgnoreCase(s))
+            {
+                return false;
+            }
+        }
         return tasks.containsKey(taskName);
     }
 
@@ -72,9 +80,6 @@ public class TaskRegistry
         registerTask("camera", TaskCamera.class);
         registerTask("cam", TaskCamera.class);
 
-        registerTask("togglethirdperson", TaskToggleThirdPerson.class);
-        registerTask("toggleminicam", TaskShowMinicam.class);
-
         registerTask("mine", TaskMineBlock.class);
 
         registerTask("hotbar", TaskHotbar.class);
@@ -88,13 +93,20 @@ public class TaskRegistry
         registerTask("q", TaskDrop.class);
         registerTask("drop", TaskDrop.class);
 
+        registerTask("crouch", TaskToggleSneak.class);
+        registerTask("sneak", TaskToggleSneak.class);
+
+        registerTask("closegui", TaskCloseGui.class);
+
+        //Op only tasks
         registerTask("cleartasks", TaskClearTasks.class);
         registerTask("endtask", TaskEndTask.class);
 
-        registerTask("crouch", TaskToggleSneak.class);
-        registerTask("sneak", TaskToggleSneak.class);
+        registerTask("endsession", TaskEndSession.class);
+
+        registerTask("togglethirdperson", TaskToggleThirdPerson.class);
+        registerTask("toggleminicam", TaskShowMinicam.class);
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, etc, democracy/anarchy
-
 }

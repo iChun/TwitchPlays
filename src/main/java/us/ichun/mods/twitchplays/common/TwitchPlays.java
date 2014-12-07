@@ -12,11 +12,13 @@ import ichun.common.core.updateChecker.ModVersionChecker;
 import ichun.common.core.updateChecker.ModVersionInfo;
 import ichun.common.core.util.ObfHelper;
 import ichun.common.iChunUtil;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Property;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import us.ichun.mods.twitchplays.client.command.CommandTwitchPlays;
 import us.ichun.mods.twitchplays.client.core.TickHandlerClient;
 
 @Mod(modid = "TwitchPlays", name = "TwitchPlays",
@@ -68,8 +70,11 @@ public class TwitchPlays
                 config.createIntProperty("minicamDistance", "twitchplays.config.prop.minicamDistance.name", "twitchplays.config.prop.minicamDistance.comment", true, false, 100, 5, 500);
                 config.createIntBoolProperty("allowTwitchStaff", "twitchplays.config.prop.allowTwitchStaff.name", "twitchplays.config.prop.allowTwitchStaff.comment", true, false, false);
                 config.createIntProperty("democracyTimer", "twitchplays.config.prop.democracyTimer.name", "twitchplays.config.prop.democracyTimer.comment", true, false, 10, 1, Integer.MAX_VALUE);
-                //TODO disabled tasks.
 
+                config.createIntBoolProperty("chatListen", "twitchplays.config.prop.chatListen.name", "twitchplays.config.prop.chatListen.comment", true, false, true);
+                config.createIntBoolProperty("autoConnect", "twitchplays.config.prop.autoConnect.name", "twitchplays.config.prop.autoConnect.comment", true, false, false);
+                config.createStringProperty("autoConnectName", "twitchplays.config.prop.autoConnectName.name", "twitchplays.config.prop.autoConnectName.comment", true, false, "");
+                config.createStringProperty("disabledTasks", "twitchplays.config.prop.disabledTasks.name", "twitchplays.config.prop.disabledTasks.comment", true, false, "");
 
                 if(!ObfHelper.obfuscation)
                 {
@@ -80,6 +85,8 @@ public class TwitchPlays
 
                 FMLCommonHandler.instance().bus().register(tickHandlerClient);
                 MinecraftForge.EVENT_BUS.register(tickHandlerClient);
+
+                ClientCommandHandler.instance.registerCommand(new CommandTwitchPlays());
 
                 ModVersionChecker.register_iChunMod(new ModVersionInfo("TwitchPlays", iChunUtil.versionOfMC, version, false));
         }

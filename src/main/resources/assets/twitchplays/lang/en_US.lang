@@ -3,9 +3,30 @@ twitchplays.config.prop.minicamSize.name=Minicam Size
 twitchplays.config.prop.minicamDistance.name=Minicam Distance
 twitchplays.config.prop.allowTwitchStaff.name=Allow Twitch Staff
 twitchplays.config.prop.democracyTimer.name=Democracy Timer
+twitchplays.config.prop.chatListen.name=Listen to MC Chat?
+twitchplays.config.prop.autoConnect.name=Auto Connect
+twitchplays.config.prop.autoConnectName.name=Auto Connect User
+twitchplays.config.prop.disabledTasks.name=Disabled Tasks
 
-twitchplays.config.prop.minicam.comment=Minicam either shows a third person/first person view of the player, depending on whichever view is on the main cam.
+twitchplays.config.prop.minicam.comment=Enable Minicam?\nMinicam either shows a third person/first person view of the player, depending on whichever view is on the main cam.
 twitchplays.config.prop.minicamSize.comment=Minicam size on screen (in percent)
 twitchplays.config.prop.minicamDistance.comment=Minicam distance (multiplied by 0.1 blocks)
 twitchplays.config.prop.allowTwitchStaff.comment=Allow Twitch Staff to use op commands?
-twitchplays.config.prop.democracyTimer.comment=How long till each democracy poll (in seconds)?
+twitchplays.config.prop.democracyTimer.comment=How long till each democracy poll, if in democracy mode (in seconds)?
+twitchplays.config.prop.chatListen.comment=Should TwitchPlays listen to Minecraft's chat for commands?
+twitchplays.config.prop.autoConnect.comment=Automatically connect to a Twitch chat when you enter a world?
+twitchplays.config.prop.autoConnectName.comment=Which Twitch user to automatically connect to (if enabled).
+twitchplays.config.prop.disabledTasks.comment=Which tasks do you want to disable?\nSeparate each task with a ", ".\nEg: forward, swim, jump\n\nDisabling a task disables all the functions:\nDisabling the camera function will disable camera up, camera down, camera left...etc
+
+twitchplays.command.help=Enter command for list of arguments.
+
+twitchplays.command.start=/twitchplays <start> <twitchname>           Start a new TwitchPlays session with <twitchname>'s chat
+twitchplays.command.end=/twitchplays <end>                    End current TwitchPlays session
+
+twitchplays.command.ended=Session with %s's Twitch chat ended.
+twitchplays.command.noSession=No current TwitchPlays session.
+twitchplays.command.alreadyStarted=Already started a session with %s's Twitch chat.
+twitchplays.command.started=Starting TwitchPlays session with %s's Twitch chat.
+
+twitchplays.chat.connected=Chat connected.
+twitchplays.chat.disconnected=Chat disconnected.

@@ -48,15 +48,13 @@ public class TickHandlerClient
             if(OpenGlHelper.isFramebufferEnabled())
             {
                 minicam = RendererHelper.createFrameBuffer("TwitchPlays", true);
+                showMinicam = true;
             }
             else
             {
-                TwitchPlays.console("Your system does not support Frame buffers, sorry!", true);
+                TwitchPlays.console("Your system does not support Frame buffers, TwitchPlays minicam will be disabled.!", true);
             }
         }
-
-        showMinicam = true;
-        oriPitch = targetPitch = prevCamPitch = camPitch = 90F;
     }
 
     @SubscribeEvent
@@ -69,61 +67,71 @@ public class TickHandlerClient
         else
         {
             Minecraft mc = Minecraft.getMinecraft();
-            ScaledResolution reso = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
 
             renderMinicamOnScreen(event);
 
-            if(!(!init || !(Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat)))
-            {
-                boolean hasMinicam = minicam != null && showMinicam;
-                for(int i = 0; i < tasks.size(); i++)
-                {
-                    Task task = tasks.get(i);
-                    if((hasMinicam ? (8 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 5) + ((i + 2) * mc.fontRenderer.FONT_HEIGHT + 1) > reso.getScaledHeight())
-                    {
-                        int line = mc.fontRenderer.getStringWidth(Integer.toString(tasks.size() - i) + " more...");
-                        mc.fontRenderer.drawString(Integer.toString(tasks.size() - i) + " more...", reso.getScaledWidth() - 6 - line, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), 0xbbbbbb, false);
-                        break;
-                    }
-                    int taskNameWidth = mc.fontRenderer.getStringWidth(task.getName());
-                    mc.fontRenderer.drawString(task.getName(), reso.getScaledWidth() - 6 - taskNameWidth, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), i == 0 ? 0xff2222 : 0xffffff, false);
-                }
-
-            }
+            renderTaskQueue(event);
 
             chatController.func_152997_n(); //updater
 
-            if(mc.theWorld != null)
+            if(mc.theWorld != worldInstance)
             {
-                if(!init)
+                if(worldInstance == null && TwitchPlays.config.getInt("autoConnect") == 1 && !init)
                 {
-                    init = true;
-
-                    tasks.clear();
-                    instaTasks.clear();
-                    taskCallTime.clear();
-
-                    String streamer = "freeflytime".toLowerCase();
-
-                    if(ObfHelper.obfuscation || !ObfHelper.obfuscation && TwitchPlays.config.getInt("twitchChatHook") == 1)
-                    {
-                        chatController.field_153010_h = true;
-                        chatController.func_152998_c(streamer);
-                        chatController.func_152985_f(streamer);
-                        chatController.field_153005_c = streamer;
-                        //TODO proper disconnecting.
-                        //These lines occcasionally crash in dev env. I do not know why. -iChun
-                    }
-
-                    //field_153010_h connectAnonymously
-                    //func_152997_n connectToChat
-                    //func_153000_j chatState
-                    //func_152991_c isConnected
-                    //func_152993_m shutdown
-                    //func_152985_f initialize(name) ???
-                    //func_152997_n update
+                    mc.thePlayer.addChatMessage(new ChatComponentTranslation("twitchplays.command.started", TwitchPlays.config.getString("autoConnectName")).setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY).setItalic(true)));
+                    startSession(TwitchPlays.config.getString("autoConnectName"));
+                }
+                worldInstance = mc.theWorld;
+                if(worldInstance == null)
+                {
+                    endSession();
                 }
             }
+        }
+    }
+
+    public void endSession()
+    {
+        if(init)
+        {
+            init = false;
+
+            chatController.func_153002_l();
+            chatOwner = "";
+        }
+    }
+
+    public void startSession(String streamer)
+    {
+        if(!init)
+        {
+            init = true;
+
+            oriPitch = targetPitch = prevCamPitch = camPitch = 90F;
+
+            tasks.clear();
+            instaTasks.clear();
+            taskCallTime.clear();
+
+            chatOwner = streamer.toLowerCase();
+
+            if(ObfHelper.obfuscation || !ObfHelper.obfuscation && TwitchPlays.config.getInt("twitchChatHook") == 1)
+            {
+                chatController.field_153010_h = true;
+                chatController.func_152998_c(chatOwner);
+                chatController.func_152985_f(chatOwner);
+                chatController.field_153005_c = chatOwner;
+                //These lines occasionally crash in dev env. I do not know why. -iChun
+            }
+
+            //field_153010_h connectAnonymously
+            //func_152997_n connectToChat
+            //func_153000_j chatState
+            //func_152991_c isConnected
+            //func_152993_m shutdown
+            //func_152985_f initialize(name) ???
+            //func_152997_n update
+            //func_153002_l disconnect
         }
     }
 
@@ -310,6 +318,30 @@ public class TickHandlerClient
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
+    }
+
+    public void renderTaskQueue(TickEvent.RenderTickEvent event)
+    {
+        if(!init || !(Minecraft.getMinecraft().currentScreen == null || Minecraft.getMinecraft().currentScreen instanceof GuiChat))
+        {
+            return;
+        }
+        Minecraft mc = Minecraft.getMinecraft();
+        ScaledResolution reso = new ScaledResolution(mc, mc.displayWidth, mc.displayHeight);
+
+        boolean hasMinicam = minicam != null && showMinicam;
+        for(int i = 0; i < tasks.size(); i++)
+        {
+            Task task = tasks.get(i);
+            if((hasMinicam ? (8 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 5) + ((i + 2) * mc.fontRenderer.FONT_HEIGHT + 1) > reso.getScaledHeight())
+            {
+                int line = mc.fontRenderer.getStringWidth(Integer.toString(tasks.size() - i) + " more...");
+                mc.fontRenderer.drawString(Integer.toString(tasks.size() - i) + " more...", reso.getScaledWidth() - 6 - line, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), 0xbbbbbb, false);
+                break;
+            }
+            int taskNameWidth = mc.fontRenderer.getStringWidth(task.getName());
+            mc.fontRenderer.drawString(task.getName(), reso.getScaledWidth() - 6 - taskNameWidth, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), i == 0 ? 0xff2222 : 0xffffff, false);
+        }
     }
 
     @SubscribeEvent
@@ -527,7 +559,7 @@ public class TickHandlerClient
     public void onChatEvent(ClientChatReceivedEvent event)
     {
         Minecraft mc = Minecraft.getMinecraft();
-        if(mc.theWorld != null && event.message instanceof ChatComponentTranslation)
+        if(TwitchPlays.config.getInt("chatListen") == 1 && init && mc.theWorld != null && event.message instanceof ChatComponentTranslation)
         {
             ChatComponentTranslation msg = (ChatComponentTranslation)event.message;
             if(msg.getKey().equals("chat.type.text") && msg.getFormatArgs().length > 1)
@@ -564,6 +596,7 @@ public class TickHandlerClient
 
     public long clock;
 
+    public WorldClient worldInstance;
     public boolean init;
 
     public boolean isDemocracy;
@@ -592,6 +625,7 @@ public class TickHandlerClient
     public static final int TURN_TIME = 10;
 
     public ChatController chatController;
+    public String chatOwner = "";
 
     @Override
     public void func_152903_a(ChatMessage[] messages) //on chat message
@@ -626,13 +660,19 @@ public class TickHandlerClient
     @Override
     public void func_152906_d() //On chat connect
     {
-
+        if(init && Minecraft.getMinecraft().thePlayer != null)
+        {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("twitchplays.chat.connected").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY).setItalic(true)));
+        }
     }
 
     @Override
     public void func_152905_e() //On chat disconnect
     {
-
+        if(Minecraft.getMinecraft().thePlayer != null)
+        {
+            Minecraft.getMinecraft().thePlayer.addChatMessage(new ChatComponentTranslation("twitchplays.chat.disconnected").setChatStyle(new ChatStyle().setColor(EnumChatFormatting.GRAY).setItalic(true)));
+        }
     }
 
     @Override
