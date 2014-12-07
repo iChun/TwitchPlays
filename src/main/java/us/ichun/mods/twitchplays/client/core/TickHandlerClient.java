@@ -99,6 +99,10 @@ public class TickHandlerClient
                 {
                     init = true;
 
+                    tasks.clear();
+                    instaTasks.clear();
+                    taskCallTime.clear();
+
                     String streamer = "freeflytime".toLowerCase();
 
                     if(ObfHelper.obfuscation || !ObfHelper.obfuscation && TwitchPlays.config.getInt("twitchChatHook") == 1)
@@ -330,6 +334,7 @@ public class TickHandlerClient
                         {
                             task.world = mc.theWorld;
                             task.player = mc.thePlayer;
+                            taskCallTime.put(task.getClass(), (int)mc.theWorld.getWorldTime());
                             task.init();
                         }
                         task.tick();
@@ -346,6 +351,7 @@ public class TickHandlerClient
                         {
                             task.world = mc.theWorld;
                             task.player = mc.thePlayer;
+                            taskCallTime.put(task.getClass(), (int)mc.theWorld.getWorldTime());
                             task.init();
                         }
                         task.tick();
@@ -483,7 +489,16 @@ public class TickHandlerClient
             for(int i = 0; i < count; i++)
             {
                 Task task = TaskRegistry.createTask(world, player, newArgs);
-                if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks)) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
+                Integer lastCall = taskCallTime.get(task.getClass());
+                if(lastCall == null)
+                {
+                    lastCall = Integer.MAX_VALUE;
+                }
+                else
+                {
+                    lastCall = (int)world.getWorldTime() - lastCall;
+                }
+                if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks), lastCall) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
                 {
                     if(add || task.requiresOp(newArgs) && !countingVotes)
                     {
@@ -559,6 +574,7 @@ public class TickHandlerClient
 
     public ArrayList<Task> tasks = new ArrayList<Task>();
     public ArrayList<Task> instaTasks = new ArrayList<Task>();
+    public HashMap<Class<? extends Task>, Integer> taskCallTime = new HashMap<Class<? extends Task>, Integer>();
 
     public boolean showMinicam;
     public boolean updateMinicam;

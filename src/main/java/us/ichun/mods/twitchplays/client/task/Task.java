@@ -26,7 +26,7 @@ public abstract class Task
 
     public void terminate(){} //called when the task ends.
 
-    public boolean canBeAdded(ImmutableList<Task> tasks)
+    public boolean canBeAdded(ImmutableList<Task> tasks, int timeSinceLastTriggered) //You have to check both tasks list if it hasn't been called yet, and time since last called (can be negative if world clock was changed). Integer.MAX_VALUE if it has never been called.
     {
         return true;
     }
