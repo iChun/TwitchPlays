@@ -341,6 +341,23 @@ public class TickHandlerClient
             }
             int taskNameWidth = mc.fontRenderer.getStringWidth(task.getName());
             mc.fontRenderer.drawString(task.getName(), reso.getScaledWidth() - 6 - taskNameWidth, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), i == 0 ? 0xff2222 : 0xffffff, false);
+            if(task.getCommander() != null)
+            {
+                String name = task.getCommander();
+                int taskCommanderWidth = mc.fontRenderer.getStringWidth(name);
+                int startX = reso.getScaledWidth() - 5 - (int)((float)reso.getScaledWidth() * (float)TwitchPlays.config.getInt("minicamSize") / 100F) + 1;
+
+                while(startX + taskCommanderWidth >= reso.getScaledWidth() - 6 - taskNameWidth)
+                {
+                    name = name.substring(0, name.length() - 1);
+                    if(name.isEmpty())
+                    {
+                        break;
+                    }
+                    taskCommanderWidth = mc.fontRenderer.getStringWidth(name);
+                }
+                mc.fontRenderer.drawString(name, startX, (hasMinicam ? (7 + (int)((float)reso.getScaledHeight() * (float)TwitchPlays.config.getInt("minicamSize") / 100F)) : 4) + (i * mc.fontRenderer.FONT_HEIGHT + 1), i == 0 ? 0xff2222 : 0xffffff, false);
+            }
         }
     }
 
@@ -362,18 +379,25 @@ public class TickHandlerClient
                     if(!tasks.isEmpty())
                     {
                         Task task = tasks.get(0);
-                        if(task.timeActive == 0)
+                        if(!mc.thePlayer.isEntityAlive() && !task.canWorkDead())
                         {
-                            task.world = mc.theWorld;
-                            task.player = mc.thePlayer;
-                            taskCallTime.put(task.getClass(), (int)mc.theWorld.getWorldTime());
-                            task.init();
-                        }
-                        task.tick();
-                        if(task.timeActive >= task.maxActiveTime())
-                        {
-                            task.terminate();
                             tasks.remove(0);
+                        }
+                        else
+                        {
+                            if(task.timeActive == 0)
+                            {
+                                task.world = mc.theWorld;
+                                task.player = mc.thePlayer;
+                                taskCallTime.put(task.getClass(), (int)mc.theWorld.getWorldTime());
+                                task.init();
+                            }
+                            task.tick();
+                            if(task.timeActive >= task.maxActiveTime())
+                            {
+                                task.terminate();
+                                tasks.remove(0);
+                            }
                         }
                     }
                     for(int i = instaTasks.size() - 1; i >= 0; i--)
@@ -429,7 +453,7 @@ public class TickHandlerClient
                                 }
                                 if(votes != -1)
                                 {
-                                    flag = parseChat(mc.theWorld, mc.thePlayer, task, false, true);
+                                    flag = parseChat(mc.theWorld, mc.thePlayer, task, null, false, true);
                                     democracyVotes.remove(task);
                                 }
                                 else
@@ -468,7 +492,7 @@ public class TickHandlerClient
     {
         if(isDemocracy)
         {
-            boolean isTask = parseChat(world, player, s, isOp, false);
+            boolean isTask = parseChat(world, player, s, user, isOp, false);
             if(isTask)
             {
                 String[] args = s.split(" ");
@@ -487,10 +511,10 @@ public class TickHandlerClient
 
             return isTask;
         }
-        return parseChat(world, player, s, isOp, true);
+        return parseChat(world, player, s, user, isOp, true);
     }
 
-    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, boolean isOp, boolean add)//return true if task is added
+    public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, String user, boolean isOp, boolean add)//return true if task is added
     {
         String[] args = s.split(" ");
         ArrayList<String> actualArgs = new ArrayList<String>();
@@ -506,7 +530,7 @@ public class TickHandlerClient
         try
         {
             int count1 = Integer.parseInt(arg0.substring(arg0.length() - 1));
-            count = count1;
+            count = MathHelper.clamp_int(count1, 1, TwitchPlays.config.getInt("inputMax"));
             arg0 = arg0.substring(0, arg0.length() - 1);
             actualArgs.remove(0);
             actualArgs.add(0, arg0);
@@ -521,19 +545,16 @@ public class TickHandlerClient
             for(int i = 0; i < count; i++)
             {
                 Task task = TaskRegistry.createTask(world, player, newArgs);
-                Integer lastCall = taskCallTime.get(task.getClass());
-                if(lastCall == null)
+                int lastCall = Integer.MAX_VALUE;
+                if(task != null && taskCallTime.containsKey(task.getClass()))
                 {
-                    lastCall = Integer.MAX_VALUE;
-                }
-                else
-                {
-                    lastCall = (int)world.getWorldTime() - lastCall;
+                    lastCall = (int)world.getWorldTime() - taskCallTime.get(task.getClass());
                 }
                 if(task != null && task.canBeAdded(ImmutableList.copyOf(tasks), lastCall) && (task.requiresOp(newArgs) && isOp || !task.requiresOp(newArgs)))
                 {
                     if(add || task.requiresOp(newArgs) && !countingVotes)
                     {
+                        task.setCommander(user);
                         if(task.bypassOrder(newArgs))
                         {
                             instaTasks.add(task);
@@ -626,6 +647,7 @@ public class TickHandlerClient
 
     public ChatController chatController;
     public String chatOwner = "";
+    public boolean forceOpInput;
 
     @Override
     public void func_152903_a(ChatMessage[] messages) //on chat message
@@ -635,9 +657,13 @@ public class TickHandlerClient
         {
             for(ChatMessage msg : messages)
             {
-                if(!msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BANNED))
+                if(msg != null && msg.modes != null && !msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BANNED))
                 {
                     boolean isOp = msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR));
+                    if(forceOpInput && !isOp)
+                    {
+                        continue;
+                    }
                     boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.userName, isOp);
                     ChatComponentText message = new ChatComponentText("");
                     message.getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE);

@@ -14,6 +14,8 @@ public abstract class Task
     public WorldClient world;
     public EntityPlayerSP player;
 
+    private String commander;
+
     public Task(WorldClient world, EntityPlayerSP player)
     {
         this.world = world;
@@ -48,5 +50,20 @@ public abstract class Task
     {
         update();
         timeActive++;
+    }
+
+    public boolean canWorkDead()
+    {
+        return false;
+    }
+
+    public void setCommander(String s)
+    {
+        commander = s;
+    }
+
+    public String getCommander()
+    {
+        return commander;
     }
 }

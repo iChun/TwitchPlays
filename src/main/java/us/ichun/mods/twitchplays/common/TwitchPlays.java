@@ -70,6 +70,7 @@ public class TwitchPlays
                 config.createIntProperty("minicamDistance", "twitchplays.config.prop.minicamDistance.name", "twitchplays.config.prop.minicamDistance.comment", true, false, 100, 5, 500);
                 config.createIntBoolProperty("allowTwitchStaff", "twitchplays.config.prop.allowTwitchStaff.name", "twitchplays.config.prop.allowTwitchStaff.comment", true, false, false);
                 config.createIntProperty("democracyTimer", "twitchplays.config.prop.democracyTimer.name", "twitchplays.config.prop.democracyTimer.comment", true, false, 10, 1, Integer.MAX_VALUE);
+                config.createIntProperty("inputMax", "twitchplays.config.prop.inputMax.name", "twitchplays.config.prop.inputMax.comment", true, false, 9, 1, 9);
 
                 config.createIntBoolProperty("chatListen", "twitchplays.config.prop.chatListen.name", "twitchplays.config.prop.chatListen.comment", true, false, true);
                 config.createIntBoolProperty("autoConnect", "twitchplays.config.prop.autoConnect.name", "twitchplays.config.prop.autoConnect.comment", true, false, false);

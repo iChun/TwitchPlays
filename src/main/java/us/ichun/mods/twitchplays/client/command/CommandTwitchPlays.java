@@ -89,7 +89,7 @@ public class CommandTwitchPlays extends CommandBase
     @SideOnly(Side.CLIENT)
     public List addTabCompletionOptions(ICommandSender par1ICommandSender, String[] args)
     {
-        return args.length == 1 ? getListOfStringsMatchingLastWord(args, "start", "end")  : null;
+        return args.length == 1 ? getListOfStringsMatchingLastWord(args, "start", "end") : args.length == 2 ? getListOfStringsMatchingLastWord(args, TwitchPlays.config.getString("autoConnectName")) : null;
     }
 
     @Override

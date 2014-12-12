@@ -106,6 +106,8 @@ public class TaskRegistry
 
         registerTask("togglethirdperson", TaskToggleThirdPerson.class);
         registerTask("toggleminicam", TaskShowMinicam.class);
+
+        registerTask("twitchinput", TaskToggleTwitchInput.class);
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, etc, democracy/anarchy
