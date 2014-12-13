@@ -18,6 +18,10 @@ public class TaskEquip extends Task {
     public boolean parse(String... args) {
         if (args.length == 2 || args.length == 3) {
             itemName = args[1];
+            if(itemName.indexOf(":") == -1)
+            {
+                itemName = "minecraft:" + itemName;
+            }
             if (args.length == 3)
                 meta = Integer.parseInt(args[2]);
             return true;

@@ -49,6 +49,12 @@ public class TaskEndTask extends Task
     }
 
     @Override
+    public boolean canWorkDead()
+    {
+        return true;
+    }
+
+    @Override
     public String getName()
     {
         return "endtask";

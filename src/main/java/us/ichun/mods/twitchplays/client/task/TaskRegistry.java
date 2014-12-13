@@ -74,21 +74,21 @@ public class TaskRegistry
         registerTask("r", TaskMovement.class);
         registerTask("d", TaskMovement.class);
 
-        registerTask("look", TaskLook.class);
+        registerTask("look", TaskLook.class);//look up,down,left,right
         registerTask("jump", TaskJump.class);
 
-        registerTask("camera", TaskCamera.class);
+        registerTask("camera", TaskCamera.class);//camera up,down,left,right,distance 5-500
         registerTask("cam", TaskCamera.class);
 
         registerTask("mine", TaskMineBlock.class);
 
-        registerTask("hotbar", TaskHotbar.class);
+        registerTask("hotbar", TaskHotbar.class);//hotbar 1-9,next,prev,>,<
 
-        registerTask("equip", TaskEquip.class);
+        registerTask("equip", TaskEquip.class);//equip <itemname> <meta>(minecraft:stick...etc)
         registerTask("hold", TaskEquip.class);
 
         registerTask("respawn", TaskRespawn.class);
-        registerTask("swim", TaskSwim.class);
+        registerTask("swim", TaskSwim.class);//swim forward,back,left,right
 
         registerTask("q", TaskDrop.class);
         registerTask("drop", TaskDrop.class);
@@ -96,7 +96,14 @@ public class TaskRegistry
         registerTask("crouch", TaskToggleSneak.class);
         registerTask("sneak", TaskToggleSneak.class);
 
+        registerTask("uncrouch", TaskUnSneak.class);
+        registerTask("unsneak", TaskUnSneak.class);
+
         registerTask("closegui", TaskCloseGui.class);
+
+        registerTask("place", TaskPlaceBlock.class);
+
+        registerTask("craft", TaskCraft.class);//craft <itemname> (default 2x2 grid. Be within range [4x4x4] of a crafting table to use a 3x3 grid)
 
         //Op only tasks
         registerTask("cleartasks", TaskClearTasks.class);
@@ -107,7 +114,9 @@ public class TaskRegistry
         registerTask("togglethirdperson", TaskToggleThirdPerson.class);
         registerTask("toggleminicam", TaskShowMinicam.class);
 
-        registerTask("twitchinput", TaskToggleTwitchInput.class);
+        registerTask("twitchinput", TaskToggleTwitchInput.class);//ops,all
+
+        registerTask("command", TaskCommand.class);//<normal ingame command>
     }
 
     //TODO mount/dismount, craft, smelt, interact, mine/attack/place/interact, etc, democracy/anarchy

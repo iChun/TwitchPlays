@@ -123,6 +123,12 @@ public class TaskCamera extends Task
     }
 
     @Override
+    public boolean canWorkDead()
+    {
+        return true;
+    }
+
+    @Override
     public String getName()
     {
         return "camera " + (moveType == 1 ? "up" : moveType == 2 ? "down" : moveType == 3 ? "left" : "right");

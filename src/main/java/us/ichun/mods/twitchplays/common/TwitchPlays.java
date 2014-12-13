@@ -76,6 +76,7 @@ public class TwitchPlays
                 config.createIntBoolProperty("autoConnect", "twitchplays.config.prop.autoConnect.name", "twitchplays.config.prop.autoConnect.comment", true, false, false);
                 config.createStringProperty("autoConnectName", "twitchplays.config.prop.autoConnectName.name", "twitchplays.config.prop.autoConnectName.comment", true, false, "");
                 config.createStringProperty("disabledTasks", "twitchplays.config.prop.disabledTasks.name", "twitchplays.config.prop.disabledTasks.comment", true, false, "");
+                config.createIntBoolProperty("antiMineDown", "twitchplays.config.prop.antiMineDown.name", "twitchplays.config.prop.antiMineDown.comment", true, false, false);
 
                 if(!ObfHelper.obfuscation)
                 {

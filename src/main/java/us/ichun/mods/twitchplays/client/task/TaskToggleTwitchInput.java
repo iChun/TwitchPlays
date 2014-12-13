@@ -33,7 +33,7 @@ public class TaskToggleTwitchInput extends Task
     {
         if(args.length == 2)
         {
-            if(args[1].equals("op"))
+            if(args[1].equals("op") || args[1].equals("ops"))
             {
                 setOp = true;
                 return true;
@@ -57,6 +57,12 @@ public class TaskToggleTwitchInput extends Task
     protected void update()
     {
 
+    }
+
+    @Override
+    public boolean canWorkDead()
+    {
+        return true;
     }
 
     @Override

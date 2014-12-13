@@ -28,7 +28,6 @@ public class TaskJump extends Task
         if(!player.isJumping && player.onGround)
         {
             player.jump();
-            player.motionY *= 0.8F;
         }
         if (player.isInWater() || player.handleLavaMovement())
         {

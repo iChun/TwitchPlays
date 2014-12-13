@@ -19,7 +19,7 @@ public class TaskCloseGui extends Task
     {
         if(Minecraft.getMinecraft().currentScreen != null && !(Minecraft.getMinecraft().currentScreen instanceof GuiChat))
         {
-            Minecraft.getMinecraft().displayGuiScreen((GuiScreen)null);
+            Minecraft.getMinecraft().thePlayer.closeScreen();
         }
     }
 

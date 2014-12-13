@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.util.MovingObjectPosition;
+import us.ichun.mods.twitchplays.common.TwitchPlays;
 
 public class TaskMineBlock extends Task
 {
@@ -38,6 +39,10 @@ public class TaskMineBlock extends Task
             {
                 terminate = true;
             }
+        }
+        if(player.rotationPitch == 90F && TwitchPlays.config.getInt("antiMineDown") == 1)
+        {
+            timeActive = 50000;
         }
         mc.func_147116_af();
     }

@@ -43,6 +43,12 @@ public class TaskRespawn extends Task
     }
 
     @Override
+    public boolean canWorkDead()
+    {
+        return true;
+    }
+
+    @Override
     public String getName()
     {
         return "respawn";

@@ -113,6 +113,8 @@ public class TickHandlerClient
             instaTasks.clear();
             taskCallTime.clear();
 
+            tasksExecuted = 0;
+
             chatOwner = streamer.toLowerCase();
 
             if(ObfHelper.obfuscation || !ObfHelper.obfuscation && TwitchPlays.config.getInt("twitchChatHook") == 1)
@@ -318,6 +320,35 @@ public class TickHandlerClient
 
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
+
+        GL11.glPushMatrix();
+        float scale = 0.5F;
+
+        GL11.glScalef(scale, scale, scale);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append((int)Math.floor(mc.thePlayer.posX));
+        sb.append(" ");
+        sb.append((int)Math.floor(mc.thePlayer.boundingBox.minY));
+        sb.append(" ");
+        sb.append((int)Math.floor(mc.thePlayer.posZ));
+
+        mc.fontRenderer.drawString(sb.toString(), (int)((width2 - 3) / scale - mc.fontRenderer.getStringWidth(sb.toString())), (int)((height1 + 3) / scale), 0xffffff, false);
+
+        mc.fontRenderer.drawString("Tasks executed: " + tasksExecuted, (int)((width1 + 3) / scale), (int)((height1 + 3) / scale), 0xffffff, false);
+        if(forceOpInput)
+        {
+            GL11.glTranslatef(0.0F, mc.fontRenderer.FONT_HEIGHT, 0.0F);
+            mc.fontRenderer.drawString("Mod only input", (int)((width1 + 3) / scale), (int)((height1 + 4) / scale), 0xffffff, false);
+        }
+        if(mc.thePlayer.isSneaking())
+        {
+            GL11.glTranslatef(0.0F, mc.fontRenderer.FONT_HEIGHT, 0.0F);
+            mc.fontRenderer.drawString("Sneaking", (int)((width1 + 3) / scale), (int)((height1 + 4) / scale), 0xffffff, false);
+        }
+
+        GL11.glPopMatrix();
+
     }
 
     public void renderTaskQueue(TickEvent.RenderTickEvent event)
@@ -391,6 +422,7 @@ public class TickHandlerClient
                                 task.player = mc.thePlayer;
                                 taskCallTime.put(task.getClass(), (int)mc.theWorld.getWorldTime());
                                 task.init();
+                                tasksExecuted++;
                             }
                             task.tick();
                             if(task.timeActive >= task.maxActiveTime())
@@ -490,6 +522,10 @@ public class TickHandlerClient
 
     public boolean parseChat(WorldClient world, EntityPlayerSP player, String s, String user, boolean isOp)//return true if task is added
     {
+        if(forceOpInput && !isOp)
+        {
+            return false;
+        }
         if(isDemocracy)
         {
             boolean isTask = parseChat(world, player, s, user, isOp, false);
@@ -530,7 +566,11 @@ public class TickHandlerClient
         try
         {
             int count1 = Integer.parseInt(arg0.substring(arg0.length() - 1));
-            count = MathHelper.clamp_int(count1, 1, TwitchPlays.config.getInt("inputMax"));
+            if(count1 > TwitchPlays.config.getInt("inputMax"))
+            {
+                return false;
+            }
+            count = count1;
             arg0 = arg0.substring(0, arg0.length() - 1);
             actualArgs.remove(0);
             actualArgs.add(0, arg0);
@@ -626,6 +666,7 @@ public class TickHandlerClient
     public HashMap<String, Integer> democracyVotes = new HashMap<String, Integer>();
     public ArrayList<String> voters = new ArrayList<String>();
 
+    public int tasksExecuted = 0;
     public ArrayList<Task> tasks = new ArrayList<Task>();
     public ArrayList<Task> instaTasks = new ArrayList<Task>();
     public HashMap<Class<? extends Task>, Integer> taskCallTime = new HashMap<Class<? extends Task>, Integer>();
@@ -660,10 +701,6 @@ public class TickHandlerClient
                 if(msg != null && msg.modes != null && !msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BANNED))
                 {
                     boolean isOp = msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_MODERATOR) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_BROADCASTER) || TwitchPlays.config.getInt("allowTwitchStaff") == 1 && (msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_STAFF) || msg.modes.contains(ChatUserMode.TTV_CHAT_USERMODE_ADMINSTRATOR));
-                    if(forceOpInput && !isOp)
-                    {
-                        continue;
-                    }
                     boolean isTask = parseChat(mc.theWorld, mc.thePlayer, msg.message, msg.userName, isOp);
                     ChatComponentText message = new ChatComponentText("");
                     message.getChatStyle().setColor(EnumChatFormatting.DARK_PURPLE);

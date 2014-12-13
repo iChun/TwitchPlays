@@ -5,9 +5,10 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
 import us.ichun.mods.twitchplays.common.TwitchPlays;
 
-public class TaskShowMinicam extends Task
+public class TaskCommand extends Task
 {
-    public TaskShowMinicam(WorldClient world, EntityPlayerSP player)
+    public String[] commands;
+    public TaskCommand(WorldClient world, EntityPlayerSP player)
     {
         super(world, player);
     }
@@ -15,7 +16,18 @@ public class TaskShowMinicam extends Task
     @Override
     public void init()
     {
-        TwitchPlays.tickHandlerClient.showMinicam = !TwitchPlays.tickHandlerClient.showMinicam;
+        Minecraft mc = Minecraft.getMinecraft();
+
+        String s = "/";
+        for(int i = 1; i < commands.length; i++)
+        {
+            s = s + commands[i] + " ";
+        }
+        s = s.trim();
+
+        mc.ingameGUI.getChatGUI().addToSentMessages(s);
+        if (net.minecraftforge.client.ClientCommandHandler.instance.executeCommand(mc.thePlayer, s) != 0) return;
+        mc.thePlayer.sendChatMessage(s);
     }
 
     @Override
@@ -30,7 +42,8 @@ public class TaskShowMinicam extends Task
     @Override
     public boolean parse(String... args)
     {
-        return args.length == 1;
+        commands = args;
+        return true;
     }
 
     @Override
@@ -42,7 +55,6 @@ public class TaskShowMinicam extends Task
     @Override
     protected void update()
     {
-
     }
 
     @Override
@@ -54,6 +66,6 @@ public class TaskShowMinicam extends Task
     @Override
     public String getName()
     {
-        return "toggleminicam";
+        return "command";
     }
 }
