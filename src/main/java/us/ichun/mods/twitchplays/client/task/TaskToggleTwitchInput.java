@@ -33,7 +33,7 @@ public class TaskToggleTwitchInput extends Task
     {
         if(args.length == 2)
         {
-            if(args[1].equals("op") || args[1].equals("ops"))
+            if(args[1].equals("op") || args[1].equals("ops") || args[1].equals("mod") || args[1].equals("mods"))
             {
                 setOp = true;
                 return true;

@@ -68,7 +68,7 @@ public class TaskCraft extends Task {
                             if(b.equals(Blocks.crafting_table))
                             {
                                 MovingObjectPosition mop = world.rayTraceBlocks(Vec3.createVectorHelper(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ), Vec3.createVectorHelper(i + 0.5D, j + 0.5D, k + 0.5D));
-                                if(mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mop.blockX == x && mop.blockY == y && mop.blockY == z)
+                                if(mop != null && mop.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mop.blockX == i && mop.blockY == j && mop.blockZ == k)
                                 {
                                     gridSize = 3;
                                     break;
@@ -78,8 +78,10 @@ public class TaskCraft extends Task {
                     }
                 }
 
+                //TODO redo this system. Server needs to know that the crafting gui is open of it tells you to buzz off.
+
                 ItemStack result = null;
-                ArrayList<ItemStack> required = new ArrayList<ItemStack>();
+                ArrayList<Object> required = new ArrayList<Object>();
 
                 List recipes = CraftingManager.getInstance().getRecipeList();
                 for(Object o : recipes)
@@ -106,10 +108,7 @@ public class TaskCraft extends Task {
                             result = res;
                             for(Object is : (Object[])ObfuscationReflectionHelper.getPrivateValue(ShapedOreRecipe.class, recipe, "input"))
                             {
-                                if(is instanceof ItemStack)
-                                {
-                                    required.add((ItemStack)is);
-                                }
+                                required.add(is);
                             }
                         }
                     }
@@ -122,10 +121,7 @@ public class TaskCraft extends Task {
                             result = res;
                             for(Object is : recipe.recipeItems)
                             {
-                                if(is instanceof ItemStack)
-                                {
-                                    required.add((ItemStack)is);
-                                }
+                                required.add(is);
                             }
                         }
                     }
@@ -138,10 +134,7 @@ public class TaskCraft extends Task {
                             result = res;
                             for(Object is : ((ArrayList<Object>)ObfuscationReflectionHelper.getPrivateValue(ShapelessOreRecipe.class, recipe, "input")))
                             {
-                                if(is instanceof ItemStack)
-                                {
-                                    required.add((ItemStack)is);
-                                }
+                                required.add(is);
                             }
                         }
                     }
@@ -149,51 +142,56 @@ public class TaskCraft extends Task {
 
                 if(result != null)
                 {
-                    ArrayList<ItemStack> invCheck = new ArrayList<ItemStack>(required);
-                    ArrayList<ItemStack> items = new ArrayList<ItemStack>();
-                    for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                        ItemStack item = player.inventory.getStackInSlot(i);
-                        if (item != null && item.getItem() != null)
-                        {
-                            items.add(item);
-                        }
-                    }
-                    for(int i = invCheck.size() - 1; i >= 0; i--)
+                    for(Object is : required)
                     {
-                        ItemStack is = invCheck.get(i);
-                        for(ItemStack is1 : items)
-                        {
-                            if (is1.getItem() == is.getItem() && (is.getItemDamage() == Short.MAX_VALUE || is1.getItemDamage() == is.getItemDamage()))
-                            {
-                                invCheck.remove(is);
-                                break;
-                            }
-                        }
+                        System.out.println(is.getClass());
                     }
 
-                    if(invCheck.isEmpty())
-                    {
-                        for(ItemStack is : required)
-                        {
-                            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                                ItemStack item = player.inventory.getStackInSlot(i);
-                                if (item != null && item.getItem() != null && item.getItem() == is.getItem() && (is.getItemDamage() == Short.MAX_VALUE || item.getItemDamage() == is.getItemDamage()))
-                                {
-                                    item.stackSize--;
-                                    if(item.stackSize == 0)
-                                    {
-                                        player.inventory.setInventorySlotContents(i, null);
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                        if(!player.inventory.addItemStackToInventory(result.copy()))
-                        {
-                            player.dropPlayerItemWithRandomChoice(result.copy(), false);
-                        }
-                    }
-                 }
+//                    ArrayList<Object> invCheck = new ArrayList<Object>(required);
+//                    ArrayList<Object> items = new ArrayList<Object>();
+//                    for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+//                        ItemStack item = player.inventory.getStackInSlot(i);
+//                        if (item != null && item.getItem() != null)
+//                        {
+//                            items.add(item);
+//                        }
+//                    }
+//                    for(int i = invCheck.size() - 1; i >= 0; i--)
+//                    {
+//                        ItemStack is = invCheck.get(i);
+//                        for(ItemStack is1 : items)
+//                        {
+//                            if (is1.getItem() == is.getItem() && (is.getItemDamage() == Short.MAX_VALUE || is1.getItemDamage() == is.getItemDamage()))
+//                            {
+//                                invCheck.remove(is);
+//                                break;
+//                            }
+//                        }
+//                    }
+//
+//                    if(invCheck.isEmpty())
+//                    {
+//                        //                        for(ItemStack is : required)
+//                        //                        {
+//                        //                            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
+//                        //                                ItemStack item = player.inventory.getStackInSlot(i);
+//                        //                                if (item != null && item.getItem() != null && item.getItem() == is.getItem() && (is.getItemDamage() == Short.MAX_VALUE || item.getItemDamage() == is.getItemDamage()))
+//                        //                                {
+//                        //                                    item.stackSize--;
+//                        //                                    if(item.stackSize == 0)
+//                        //                                    {
+//                        //                                        player.inventory.setInventorySlotContents(i, null);
+//                        //                                    }
+//                        //                                    break;
+//                        //                                }
+//                        //                            }
+//                        //                        }
+//                        //                        if(!player.inventory.addItemStackToInventory(result.copy()))
+//                        //                        {
+//                        //                            player.dropPlayerItemWithRandomChoice(result.copy(), false);
+//                        //                        }
+//                    }
+                }
             }
         }
     }

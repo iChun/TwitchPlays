@@ -114,7 +114,7 @@ public class TaskRegistry
         registerTask("togglethirdperson", TaskToggleThirdPerson.class);
         registerTask("toggleminicam", TaskShowMinicam.class);
 
-        registerTask("twitchinput", TaskToggleTwitchInput.class);//ops,all
+        registerTask("twitchinput", TaskToggleTwitchInput.class);//mods,all
 
         registerTask("command", TaskCommand.class);//<normal ingame command>
     }
