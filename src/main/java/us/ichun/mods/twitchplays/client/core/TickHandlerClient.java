@@ -562,6 +562,10 @@ public class TickHandlerClient
             }
         }
         int count = 1;
+        if(actualArgs.isEmpty())
+        {
+            return false;
+        }
         String arg0 = actualArgs.get(0);
         try
         {
