@@ -19,7 +19,7 @@ twitchplays.config.prop.chatListen.comment=Should TwitchPlays listen to Minecraf
 twitchplays.config.prop.autoConnect.comment=Automatically connect to a Twitch chat when you enter a world?
 twitchplays.config.prop.autoConnectName.comment=Which Twitch user to automatically connect to (if enabled).
 twitchplays.config.prop.disabledTasks.comment=Which tasks do you want to disable?\nSeparate each task with a ", ".\nEg: forward, swim, jump\n\nDisabling a task disables all the functions:\nDisabling the camera function will disable camera up, camera down, camera left...etc
-twitchplays.config.prop.inputMax.comment=Maximum chain of commands from one text projIdent.
+twitchplays.config.prop.inputMax.comment=Maximum chain of commands from one text message.
 twitchplays.config.prop.antiMineDown.comment=Try to prevent Twitch users from mining downwards.
 
 twitchplays.command.help=Enter command for list of arguments.
